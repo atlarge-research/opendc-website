@@ -31,8 +31,10 @@
 .memberIntro {
     justify-content: normal;
     margin-top: 0.5em;
+    text-align: center;
 }
 
 .memberIntro > :global(.avatar__subtitle) {
     max-width: 155px;
+    margin: 0 auto;
 }

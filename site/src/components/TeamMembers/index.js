@@ -39,6 +39,15 @@ const leads = [
         url: 'https://www.atlarge-research.com/dniewenhuis/',
     },
     {
+        name: 'Vincent van Beek',
+        title: 'Former Technology Lead (2017-2018)',
+        avatar: 'https://www.atlarge-research.com/images/people/vvanbeek_large.png',
+        url: 'https://www.atlarge-research.com/vvanbeek/',
+    },
+]
+
+const formerLeads = [
+    {
         name: 'Fabian Mastenbroek',
         title: 'Technology Lead (2020-2022)',
         avatar: 'https://www.atlarge-research.com/images/people/fmastenbroek_large.png',
@@ -50,15 +59,33 @@ const leads = [
         avatar: 'https://www.atlarge-research.com/images/people/gandreadis_large.png',
         url: 'https://www.atlarge-research.com/gandreadis/',
     },
-    {
-        name: 'Vincent van Beek',
-        title: 'Former Technology Lead (2017-2018)',
-        avatar: 'https://www.atlarge-research.com/images/people/vvanbeek_large.png',
-        url: 'https://www.atlarge-research.com/vvanbeek/',
-    },
 ]
 
 const members = [
+    {
+        name: 'Radu Nicolae',
+        avatar: 'https://www.atlarge-research.com/images/people/rnicolae_large.png',
+        url: 'https://www.atlarge-research.com/rnicolae/',
+    },
+    {
+        name: 'Jure Antunović',
+        avatar: 'https://www.atlarge-research.com/images/people/jantunovic_large.png',
+        url: 'https://www.atlarge-research.com/jantunovic/',
+    },
+    {
+        name: 'Daniel Halasz',
+        avatar: 'https://www.atlarge-research.com/images/people/dhalasz_large.png',
+        url: 'https://www.atlarge-research.com/dhalasz/',
+    },
+    {
+        name: 'Mateusz Kwiatkowski',
+        avatar: 'https://www.atlarge-research.com/images/people/mkwiatkowski_large.png',
+        url: 'https://www.atlarge-research.com/mkwiatkowski/',
+    },
+
+]
+
+const formerMembers = [
     {
         name: 'Matthijs Bijman',
         avatar: 'https://www.atlarge-research.com/images/people/mbijman_large.png',
@@ -99,7 +126,6 @@ const members = [
         avatar: 'https://www.atlarge-research.com/images/people/loverweel_large.png',
         url: 'https://www.atlarge-research.com/loverweel/',
     },
-
     {
         name: 'Sacheendra Talluri',
         avatar: 'https://www.atlarge-research.com/images/people/stalluri_large.png',
@@ -141,7 +167,34 @@ export default function TeamMembers() {
                         size="xl"
                     />
                 ))}
+            </div>
+            <div className={clsx(styles.members, 'row')}>
                 {members.map(({ name, avatar, url }) => (
+                    <TeamMember key={name} className="col col--2" name={name} avatar={avatar} url={url} />
+                ))}
+            </div>
+        </div>
+    )
+}
+
+export function FormerTeamMembers() {
+    return (
+        <div className="container">
+            <div className={clsx(styles.members, 'row')}>
+                {formerLeads.map(({ name, title, avatar, url }) => (
+                    <TeamMember
+                        key={name}
+                        className="col col--3"
+                        name={name}
+                        title={title}
+                        avatar={avatar}
+                        url={url}
+                        size="xl"
+                    />
+                ))}
+            </div>
+            <div className={clsx(styles.members, 'row')}>
+                {formerMembers.map(({ name, avatar, url }) => (
                     <TeamMember key={name} className="col col--2" name={name} avatar={avatar} url={url} />
                 ))}
             </div>
