@@ -192,6 +192,28 @@ research/cloud-uptime-archive.`
         ]
     },
     {
+        title: "RADiCe: A Risk Analysis Framework for Data Centers",
+        link: "https://www.sciencedirect.com/science/article/pii/S0167739X24006666?via%3Dihub",
+        venue: "FCGS",
+        year: 2025,
+        authors: [
+            "Fabian Mastenbroek", "Tiziano De Matteis", "Vincent van Beek", "Alexandru Iosup"
+        ],
+        abstract: [
+            `Datacenter service providers face engineering and operational challenges involving numerous risk aspects. Bad
+            decisions can result in financial penalties, competitive disadvantage, and unsustainable environmental impact.
+            Risk management is an integral aspect of the design and operation of modern datacenters, but frameworks that
+            allow users to consider various risk trade-offs conveniently are missing. We propose RADiCe, an open-source
+            framework that enables data-driven analysis of IT-related operational risks in sustainable datacenters. RADiCe
+            uses monitoring and environmental data and, via discrete event simulation, assists datacenter experts through
+            systematic evaluation of risk scenarios, visualization, and optimization of risks. Our analyses highlight the
+            increasing risk datacenter operators face due to price surges in electricity and sustainability and demonstrate
+            how RADiCe can evaluate and control such risks by optimizing the topology and operational settings of the
+            datacenter. Eventually, RADiCe can evaluate risk scenarios by a factor 70x–330x faster than others, opening
+            possibilities for interactive risk exploration.`
+        ]
+    },
+    {
         title: "FootPrinter: Quantifying Data Center Carbon Footprint",
         link: "https://dl.acm.org/doi/10.1145/3629527.3651419",
         venue: "HotCloudPerf",
