@@ -1,129 +1,79 @@
-A host is a machine that can execute tasks. A host consist of the following components:
+---
+sidebar_position: 1
+description: The hosts on which tasks run, with their CPU, memory and GPU.
+---
 
-| variable              | type                                                                         | required? | default | description                                                                    |
-|-----------------------|:-----------------------------------------------------------------------------|:----------|---------|--------------------------------------------------------------------------------|
-| name                  | string                                                                       | no        | Host    | The name of the host. This is only important for debugging and post-processing |
-| count                 | integer                                                                      | no        | 1       | The amount of hosts of this type are in the cluster                            |
-| cpuModel              | [CPU](#cpu)                                                                  | yes       | N/A     | The CPUs in the host                                                           |
-| memory                | [Memory](#memory)                                                            | yes       | N/A     | The memory used by the host                                                    |
-| cpuPowerModel         | [Power Model](/learn/documentation/Input/Topology/PowerModel)                 | no        | Default | The power model used to determine the power draw of the cpu                    |
-| gpuPowerModel         | [Power Model](/learn/documentation/Input/Topology/PowerModel)                 | no        | Default | The power model used to determine the power draw of the gpu                    |
-| cpuDistributionPolicy | [Distribution Policy](/learn/documentation/Input/Topology/DistributionPolicy) | no        | Default | The distribution policy used for the CPU                                       |
-| gpuDistributionPolicy | [Distribution Policy](/learn/documentation/Input/Topology/DistributionPolicy) | no        | Default | The distribution policy used for the GPU                                       |
+# Host
+
+A host is a machine on which tasks run. It has a CPU and memory, and can have a GPU.
+
+| Field             | Type                                             | Default                     | Description                                             |
+|-------------------|--------------------------------------------------|-----------------------------|---------------------------------------------------------|
+| `name`            | string                                           | `"Host"`                    | Name of the host.                                       |
+| `count`           | integer                                          | `1`                         | The number of identical hosts to create.                |
+| `cpu`             | [CPU](#cpu)                                      | required                    | The CPU of the host.                                    |
+| `memory`          | [Memory](#memory)                                | required                    | The memory of the host.                                 |
+| `gpu`             | [GPU](#gpu)                                      | no GPU                      | The GPU of the host.                                    |
+| `cpuPowerModel`   | [Power model](./PowerModel.md)                   | linear, 200 W idle, 400 W max | Power draw of the CPU.                                |
+| `gpuPowerModel`   | [Power model](./PowerModel.md)                   | linear, 200 W idle, 400 W max | Power draw of the GPU.                                |
+| `cpuDistribution` | [Distribution policy](./DistributionPolicy.md)   | `maxMinFairness`            | How the CPU is shared between tasks.                    |
+| `gpuDistribution` | [Distribution policy](./DistributionPolicy.md)   | `maxMinFairness`            | How the GPU is shared between tasks.                    |
 
 ## CPU
 
-| variable  | type    | Unit  | required? | default | description                                      |
-|-----------|---------|-------|-----------|---------|--------------------------------------------------|
-| modelName | string  | N/A   | no        | unknown | The name of the CPU.                             |
-| vendor    | string  | N/A   | no        | unknown | The vendor of the CPU                            |
-| arch      | string  | N/A   | no        | unknown | the micro-architecture of the CPU                |
-| count     | integer | N/A   | no        | 1       | The number of CPUs of this type used by the host |
-| coreCount | integer | count | yes       | N/A     | The number of cores in the CPU                   |
-| coreSpeed | Double  | Mhz   | yes       | N/A     | The speed of each core in Mhz                    |
+| Field          | Type                                 | Default     | Description                          |
+|----------------|--------------------------------------|-------------|--------------------------------------|
+| `coreCount`    | integer                              | required    | The number of cores per CPU.         |
+| `coreSpeed`    | [Frequency](../../Units.md)          | required    | The speed of each core.              |
+| `count`        | integer                              | `1`         | The number of CPUs in the host.      |
+| `vendor`       | string                               | `"unknown"` | The vendor of the CPU.               |
+| `modelName`    | string                               | `"unknown"` | The model of the CPU.                |
+| `architecture` | string                               | `"unknown"` | The micro-architecture of the CPU.   |
 
 ## Memory
 
-| variable    | type    | Unit | required? | default | description                                                              |
-|-------------|---------|------|-----------|---------|--------------------------------------------------------------------------|
-| modelName   | string  | N/A  | no        | unknown | The name of the CPU.                                                     |
-| vendor      | string  | N/A  | no        | unknown | The vendor of the CPU                                                    |
-| arch        | string  | N/A  | no        | unknown | the micro-architecture of the CPU                                        |
-| memorySize  | integer | Byte | yes       | N/A     | The number of cores in the CPU                                           |
-| memorySpeed | Double  | Mhz  | no        | -1      | The speed of each core in Mhz. PLACEHOLDER: this currently does nothing. |
+| Field          | Type                         | Default     | Description                     |
+|----------------|------------------------------|-------------|---------------------------------|
+| `size`         | [Data size](../../Units.md)  | required    | The amount of memory.           |
+| `speed`        | [Frequency](../../Units.md)  | unspecified | The speed of the memory.        |
+| `vendor`       | string                       | `"unknown"` | The vendor of the memory.       |
+| `modelName`    | string                       | `"unknown"` | The model of the memory.        |
+| `architecture` | string                       | `"unknown"` | The memory technology.          |
 
-## GPU 
+## GPU
 
-GPUS are an optional component of a host. The required fields are only required if the host has GPUs.
+| Field                    | Type                                                        | Default     | Description                                  |
+|--------------------------|-------------------------------------------------------------|-------------|----------------------------------------------|
+| `coreCount`              | integer                                                     | required    | The number of cores per GPU.                 |
+| `coreSpeed`              | [Frequency](../../Units.md)                                 | required    | The speed of each core.                      |
+| `count`                  | integer                                                     | `1`         | The number of GPUs in the host.              |
+| `memory`                 | [Data size](../../Units.md)                                 | unspecified | The memory of each GPU.                      |
+| `memoryBandwidth`        | [Data rate](../../Units.md)                                 | unspecified | The memory bandwidth of each GPU.            |
+| `vendor`                 | string                                                      | `"unknown"` | The vendor of the GPU.                       |
+| `modelName`              | string                                                      | `"unknown"` | The model of the GPU.                        |
+| `architecture`           | string                                                      | `"unknown"` | The micro-architecture of the GPU.           |
+| `virtualizationOverhead` | [Virtualization overhead](./VirtualizationOverHeadModel.md) | `none`      | The performance lost when the GPU is shared. |
 
-| variable                     | type                                                                                          | Unit             | required? | default | description                                                            |
-|------------------------------|-----------------------------------------------------------------------------------------------|------------------|-----------|---------|------------------------------------------------------------------------|
-| modelName                    | string                                                                                        | N/A              | no        | unknown | The name of the GPU.                                                   |
-| vendor                       | string                                                                                        | N/A              | no        | unknown | The vendor of the GPU                                                  |
-| arch                         | string                                                                                        | N/A              | no        | unknown | the micro-architecture of the GPU                                      |
-| count                        | integer                                                                                       | N/A              | no        | 1       | The number of GPUs of this type used by the host                       |
-| coreCount                    | integer                                                                                       | count            | yes       | N/A     | The number of cores in the GPU                                         |
-| coreSpeed                    | Double                                                                                        | Mhz              | yes       | N/A     | The speed of each core in Mhz                                          |
-| memorySize                   | integer                                                                                       | Byte             | no        | N/A     | The speed of each core in Mhz                                          |
-| memoryBandwidth              | Double                                                                                        | Bytes per Second | no        | N/A     | The speed of each core in Mhz                                          |
-| virtualizationOverHeadModel  | [VirtualizationOverHeadModel](/learn/documentation/Input/Topology/VirtualizationOverHeadModel) | N/A              | no        | N/A     | The virtualization model of the GPU, used to determine the performance |
+## Example
 
-## Example - No GPU
-
-```json
-{
-    "name": "H01",
-    "cpu": {
-        "coreCount": 16,
-        "coreSpeed": 2100
-    },
-    "memory": {
-        "memorySize": 100000
-    },
-    "CpuPowerModel": {
-        "modelType": "sqrt",
-        "idlePower": 32.0,
-        "maxPower": 180.0
-    },
-    "count": 100
-}
-```
-
-This example creates 100 hosts with 16 cores and 2.1 Ghz CPU speed, and 100 GB of memory.
-The power model used is a square root model with a power of 400 W, idle power of 32 W, and max power of 180 W.
-For more information on the power model, see [Power Model](/learn/documentation/Input/Topology/PowerModel).
-
-## Example - With GPU
+A host with two 24-core CPUs and two GPUs:
 
 ```json
 {
-    "clusters": [
-        {
-            "name": "C01",
-            "hosts": [
-                {
-                    "name": "DualGpuHost",
-                    "cpu": {
-                        "coreCount": 4,
-                        "coreSpeed": 2000
-                    },
-                    "memory": {
-                        "memorySize": 140457600000
-                    },
-                    "cpuPowerModel": {
-                        "modelType": "linear",
-                        "power": 400.0,
-                        "idlePower": 100.0,
-                        "maxPower": 200.0
-                    },
-                    "cpuDistributionPolicy": {
-                        "type": "MAX_MIN_FAIRNESS"
-                    },
-                    "gpu": {
-                        "coreCount": 2,
-                        "coreSpeed": 2000,
-                        "virtualizationOverHeadModel": {
-                            "type": "CONSTANT",
-                            "percentageOverhead": 0.25
-                        }
-                    },
-                    "gpuPowerModel": {
-                        "modelType": "linear",
-                        "power": 400.0,
-                        "idlePower": 100.0,
-                        "maxPower": 200.0
-                    },
-                    "gpuDistributionPolicy": {
-                        "type": "FIXED_SHARE",
-                        "shareRatio": 0.5
-                    }
-                }
-            ]
-        }
-    ]
+    "name": "gpu-host",
+    "count": 8,
+    "cpu": { "coreCount": 24, "coreSpeed": "2.8 GHz", "count": 2, "vendor": "Intel" },
+    "memory": { "size": "192 GiB" },
+    "cpuPowerModel": { "type": "linear", "idlePower": "100 W", "maxPower": "350 W" },
+    "gpu": {
+        "coreCount": 5120,
+        "coreSpeed": "1.5 GHz",
+        "count": 2,
+        "memory": "32 GiB",
+        "memoryBandwidth": "900 GBps",
+        "virtualizationOverhead": { "type": "constant", "percentageOverhead": 0.1 }
+    },
+    "gpuPowerModel": { "type": "linear", "idlePower": "50 W", "maxPower": "300 W" },
+    "gpuDistribution": { "type": "fixedShare", "shareRatio": 0.5 }
 }
 ```
-
-This example creates a host with 4 CPU cores and 2 GPU cores, both with a speed of 2.0 Ghz.
-The host has 140 GB of memory and uses a linear power model for both CPU and GPU with a power of 400 W, idle power of 100 W, and max power of 200 W.
-For more information on the power model, see [Power Model](/learn/documentation/Input/Topology/PowerModel).

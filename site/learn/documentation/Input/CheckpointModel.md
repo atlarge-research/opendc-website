@@ -1,25 +1,25 @@
-Checkpointing is a technique to reduce the impact of machine failure. 
-When using Checkpointing, tasks make periodical snapshots of their state.
-If a task fails, it can be restarted from the last snapshot instead of starting from the beginning.
+---
+sidebar_position: 6
+description: Checkpoint models, which let tasks save their progress so that a failure loses less work.
+---
 
-A user can define a checkpoint model using the following parameters:
+# Checkpoint model
 
-| Variable                  | Type   | Required? | Default | Description                                                                                                          |
-|---------------------------|--------|-----------|---------|----------------------------------------------------------------------------------------------------------------------|
-| checkpointInterval        | Int64  | no        | 3600000 | The time between checkpoints in ms                                                                                   |
-| checkpointDuration        | Int64  | no        | 300000  | The time to create a snapshot in ms                                                                                  |
-| checkpointIntervalScaling | Double | no        | 1.0     | The scaling of the checkpointInterval after each successful checkpoint. The default of 1.0 means no scaling happens. |
+Checkpointing is a techniques used to reduce the impact of failures. WHen using checkpointing, tasks take periodic snapshots. 
+At a failure, the task does not have to restart fully, but restarts at the lat snapshot. A checkpointing model defines, when a task should make a snapshot. Checkpointing is off by default.
 
-### Example
+| Field             | Type                     | Default     | Description                                                                          |
+|-------------------|--------------------------|-------------|--------------------------------------------------------------------------------------|
+| `interval`        | [Duration](../Units.md)  | `1 hours`   | The time between two checkpoints.                                                    |
+| `duration`        | [Duration](../Units.md)  | `5 minutes` | How long it takes to create a checkpoint.                                            |
+| `intervalScaling` | number                   | `1.0`       | The factor by which `interval` is multiplied after each checkpoint. `1.0` keeps it the same. |
+
+## Example
 
 ```json
-{
-    "checkpointInterval": 3600000,
-    "checkpointDuration": 300000,
-    "checkpointIntervalScaling": 1.5
-}
+"checkpointModels": [
+    { "interval": "1 hours", "duration": "5 minutes", "intervalScaling": 1.5 }
+]
 ```
 
-In this example, a snapshot is created every hour, and the snapshot creation takes 5 minutes.
-The checkpointIntervalScaling is set to 1.5, which means that after each successful checkpoint, 
-the interval between checkpoints will be increased by 50% (for example from 1 to 1.5 hours).
+In this example each task takes a snapshot at growing intervals at: 1 hour, 1.5 hours, 2.25 hours, and so on.

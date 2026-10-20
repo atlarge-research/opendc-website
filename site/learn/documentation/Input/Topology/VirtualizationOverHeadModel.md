@@ -1,39 +1,27 @@
-OpenDC offers to model the overhead of virtualization in a GPU. Overhead is modelled as decrease of supply.
-Three different models are available to represent the performance overhead of virtualization in a GPU as described below. 
-It is not required to define a virtualization overhead model for a GPU, in which case the GPU is assumed to be used directly by the VM without any overhead.
+---
+sidebar_position: 4
+description: Virtualization overhead models, which determine the performance lost when a GPU is shared.
+---
 
+# Virtualization overhead
 
-## No Overhead
+A virtualization overhead model determines how much performance a GPU loses when it is shared by virtual machines. The
+overhead lowers the capacity the GPU can supply. It is set with the `virtualizationOverhead` field of a
+[GPU](./Host.md#gpu). The default is `none`.
 
-This model assumes that there is no overhead when using a GPU.
-This type of overhead occurs when GPU pass-through or Para or Full virtualization is used.
-In this case, the GPU is used directly by the VM and there is no overhead.
+The `type` selects the model:
 
-```` json
-"virtualizationOverHeadModel": {
-    "type": "NONE"
-}
-````
+| Type         | Fields               | Behaviour                                                                                                                                                       |
+|--------------|----------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `none`       |                      | No overhead, as with GPU pass-through. This is the default.                                                                                                     |
+| `constant`   | `percentageOverhead` | A fixed overhead, as a fraction of the capacity. When `percentageOverhead` is omitted, 0.05 (5%) is used.                                                       |
+| `shareBased` |                      | An overhead that depends on the number of virtual machines sharing the GPU, based on Garg et al., [Empirical Analysis of Hardware-Assisted GPU Virtualization](https://doi.org/10.1109/HiPC.2019.00054). |
 
-## Constant Overhead
+## Example
 
-The constant overhead model assumes that there is a fixed percentage of performance overhead when using a GPU. 
-The overhead can be customized by setting the `percentageOverhead` parameter.
-
-``` json
-"virtualizationOverHeadModel": {
-    "type": "CONSTANT",
+```json
+"virtualizationOverhead": {
+    "type": "constant",
     "percentageOverhead": 0.25
-}
-```
-
-## Share Based Overhead
-
-The share based overhead model assumes that the performance overhead is based on the number of VMs sharing the GPU. 
-This is based on the insights of the paper by Garg et al. [Empirical Analysis of Hardware-Assisted GPU Virtualization](https://doi.org/10.1109/HiPC.2019.00054).
-
-``` json
-"virtualizationOverHeadModel": {
-    "type": "SHARE_BASED"
 }
 ```

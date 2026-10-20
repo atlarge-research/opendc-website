@@ -33,7 +33,7 @@ const config = {
                     path: "learn",
                     routeBasePath: "learn",
                     sidebarPath: require.resolve("./sidebars.js"),
-                    editUrl: `https://github.com/${organizationName}/${projectName}/tree/master/site/`
+                    editUrl: `https://github.com/${organizationName}/${projectName}-website/tree/main/site/`
                 },
                 theme: {
                     customCss: require.resolve("./src/css/custom.css")
@@ -50,7 +50,7 @@ const config = {
                 id: "community",
                 path: "community",
                 routeBasePath: "community",
-                editUrl: `https://github.com/${organizationName}/${projectName}/tree/master/site/`,
+                editUrl: `https://github.com/${organizationName}/${projectName}-website/tree/main/site/`,
                 sidebarPath: require.resolve("./sidebars.js")
             })
         ],
@@ -60,7 +60,7 @@ const config = {
                 id: "research",
                 path: "research",
                 routeBasePath: "research",
-                editUrl: `https://github.com/${organizationName}/${projectName}/tree/master/site/`,
+                editUrl: `https://github.com/${organizationName}/${projectName}-website/tree/main/site/`,
                 sidebarPath: require.resolve("./sidebars.js")
             })
         ]
@@ -121,7 +121,7 @@ const config = {
                             },
                             {
                                 label: "Tutorials",
-                                to: "/learn/category/tutorials"
+                                href: "https://github.com/atlarge-research/opendc-demos"
                             },
                             {
                                 label: "Documentation",
