@@ -1,36 +1,34 @@
-OpenDC uses power models to determine the power draw based on the utilization of a host. 
-All models in OpenDC are based on linear models interpolated between the idle and max power draw.
-OpenDC currently supports the following power models:
-1. **Constant**: The power draw is constant and does not depend on the utilization of the host.
-2. **Sqrt**: The power draw interpolates between idle and max using a square root function.
-3. **Linear**: The power draw interpolates between idle and max using a linear function.
-4. **Square**: The power draw interpolates between idle and max using a square function.
-5. **Cubic**The power draw interpolates between idle and max using a cubic function.
-6. **MSE**: The power draw interpolates between idle and max using a mean square error function.
-7. **Asymptotic**: The power draw interpolates between idle and max using an asymptotic function.
+---
+sidebar_position: 2
+description: Power models, which determine the power draw of a CPU or GPU from its utilization.
+---
 
-The power model is defined using the following parameters:
+# Power model
 
-| variable          | type    | Unit | required? | default | description                                                                |
-|-------------------|---------|------|-----------|---------|----------------------------------------------------------------------------|
-| modelType         | string  | N/A  | yes       | N/A     | The type of model used to determine power draw                             |
-| power             | double  | Mhz  | no        | 400     | The power draw of a host when using the constant power draw model.         |
-| idlePower         | double  | Mhz  | yes       | N/A     | The power draw of a host when idle in Watt.                                |
-| maxPower          | double  | Mhz  | yes       | N/A     | The power draw of a host when using max capacity in Watt.                  |
-| calibrationFactor | double  | Mhz  | no        | N/A     | The parameter set to minimize the mean squared error.                      |
-| asymUtil          | double  | Mhz  | no        | N/A     | A utilization level at which the host attains asymptotic.                  |
-| dvfs              | Boolean | N/A  | no        | N/A     | A flag indicates whether dynamic voltage and frequency scaling is enabled. |
+A power model determines the power draw of a component based on its utilization. At the moment, power models are used by CPUs and GPUs.
+OpenDC defines 7 different models that map utilization to power draw. The default power model is a linear model with an idle power of 200W
+and a maximum power of 400W.
 
+The `type` selects the model:
+
+| Type         | Fields                                                    | Power draw                                                                       |
+|--------------|-----------------------------------------------------------|----------------------------------------------------------------------------------|
+| `constant`   | `power`                                                   | A constant power of `power`, regardless of the utilization.                                  |
+| `linear`     | `idlePower`, `maxPower`                                   | Grows linearly from `idlePower` at 0% utilization to `maxPower` at 100%.         |
+| `square`     | `idlePower`, `maxPower`                                   | Grows with the square of the utilization.                                        |
+| `cubic`      | `idlePower`, `maxPower`                                   | Grows with the cube of the utilization.                                          |
+| `sqrt`       | `idlePower`, `maxPower`                                   | Grows with the square root of the utilization.                                   |
+| `mse`        | `idlePower`, `maxPower`, `calibrationFactor`              | Fitted to measurements, after Fan et al., ISCA 2007.                             |
+| `asymptotic` | `idlePower`, `maxPower`, `asymUtil`, `dvfs` (default `true`) | Grows close to linearly above the utilization `asymUtil`, adapted from GreenCloud. |
+
+All power fields are [Power](../../Units.md) values. `idlePower` can not be higher than `maxPower`.
 
 ## Example
 
 ```json
-{
-    "modelType": "sqrt",
-    "idlePower": 32.0,
-    "maxPower": 180.0
+"cpuPowerModel": {
+    "type": "sqrt",
+    "idlePower": "32 W",
+    "maxPower": "180 W"
 }
 ```
-
-This creates a power model that uses a square root function to determine the power draw of a host.
-The model uses an idle and max power of 32 W and 180 W respectively.
