@@ -1,0 +1,28 @@
+.badge {
+    flex-shrink: 0;
+    margin-left: 0.5rem;
+    padding: 0 0.4rem;
+    border-radius: 4px;
+    background: var(--ifm-color-warning-contrast-background);
+    color: var(--ifm-color-warning-contrast-foreground);
+    font-size: 0.7rem;
+    font-weight: 600;
+    line-height: 1.4rem;
+    white-space: nowrap;
+}
+
+.toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding-bottom: 8px;
+    color: var(--ifm-color-emphasis-700);
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.hiddenResults {
+    margin-top: -0.5rem;
+    color: var(--ifm-color-emphasis-700);
+    font-size: 0.9rem;
+}
