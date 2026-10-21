@@ -1,37 +1,42 @@
-Batteries can be used to store energy for later use. 
-In previous work, we have used batteries to store energy from the grid when the carbon intensity is low, 
-and use this energy when the carbon intensity is high.
+---
+sidebar_position: 6
+description: Batteries, which store energy for a cluster to use when the carbon intensity is high.
+---
 
-Batteries are defined using the following parameters:
+# Battery
 
-| variable         | type                      | Unit  | required? | default | description                                                                       |
-|------------------|---------------------------|-------|-----------|---------|-----------------------------------------------------------------------------------|
-| name             | string                    | N/A   | no        | Battery | The name of the battery. This is only important for debugging and post-processing |
-| capacity         | Double                    | kWh   | yes       | N/A     | The total amount of energy that the battery can hold.                             |
-| chargingSpeed    | Double                    | W     | yes       | N/A     | Charging speed of the battery.                                                    |
-| initialCharge    | Double                    | kWh   | no        | 0.0     | The initial charge of the battery. If not given, the battery starts empty.        |
-| batteryPolicy    | [Policy](#battery-policy) | N/A   | yes       | N/A     | The policy which decides when to charge and discharge.                            |
-| embodiedCarbon   | Double                    | gram  | no        | 0.0     | The embodied carbon emitted while creating this battery.                          |
-| expectedLifetime | Double                    | Years | yes       | 0.0     | The expected lifetime of the battery.                                             |
+A [cluster](./Topology.md#cluster) can have a battery. A battery stores energy from the power source and supplies it to
+the hosts later. Its policy decides when it charges and discharges, based on the carbon intensity of the
+[power source](./PowerSource.md).
 
-## Battery Policy
-To determine when to charge and discharge the battery, a policy is required.
-Currently, all policies for batteries are based on the carbon intensity of the grid.
+| Field              | Type                  | Default     | Description                                                |
+|--------------------|-----------------------|-------------|------------------------------------------------------------|
+| `name`             | string                | `"Battery"` | Name of the battery.                                       |
+| `capacity`         | number                | required    | The amount of energy the battery can store, in kWh.        |
+| `chargingSpeed`    | number                | required    | The speed at which the battery charges, in Watt.           |
+| `initialCharge`    | number                | `0`         | The charge at the start of the simulation, in kWh.         |
+| `batteryPolicy`    | [policy](#policies)   | required    | When the battery charges and discharges.                   |
+| `embodiedCarbon`   | number                | `0`         | The carbon emitted to manufacture the battery, in gram.    |
+| `expectedLifetime` | number                | `0`         | The expected lifetime of the battery, in years.            |
 
-The best performing policy is called "runningMeanPlus" and is based on the running mean of the carbon intensity.
-it can be defined with the following JSON:
+## Policies
+
+The `type` selects the policy. In each policy, the battery charges until it is full when the carbon intensity is low,
+and discharges until it is empty when the carbon intensity is high.
+
+| Type              | Fields                             | The carbon intensity is low when it is                                                     |
+|-------------------|------------------------------------|--------------------------------------------------------------------------------------------|
+| `single`          | `carbonThreshold`                  | below `carbonThreshold`.                                                                   |
+| `double`          | `lowerThreshold`, `upperThreshold` | below `lowerThreshold`, and high when it is above `upperThreshold`. In between, the battery is idle. |
+| `runningMean`     | `startingThreshold`, `windowSize`  | below the mean of the last `windowSize` carbon intensities.                               |
+| `runningMeanPlus` | `startingThreshold`, `windowSize`  | like `runningMean`, but the battery only starts charging once the carbon intensity stops decreasing. |
+
+## Example
 
 ```json
-{
-    "type": "runningMeanPlus",
-    "startingThreshold": 123.2,
-    "windowSize": 168
+"battery": {
+    "capacity": 100.0,
+    "chargingSpeed": 5000.0,
+    "batteryPolicy": { "type": "runningMeanPlus", "startingThreshold": 123.2, "windowSize": 168 }
 }
 ```
-
-In which `startingThreshold` is the initial carbon threshold used.
-`windowSize` is the size of the window used to calculate the running mean.
-
-:::info Alert
-This page with be extended with more text and policies in the future.
-:::

@@ -14,7 +14,7 @@ supply it to the hosts later. A [Battery Policy](#battery-policies) decides when
 | `capacity`         | [Energy](../../Units.md)  | required    | The amount of energy the battery can store.                   |
 | `chargingSpeed`    | [Power](../../Units.md)   | required    | The speed at which the battery charges.                       |
 | `initialCharge`    | [Energy](../../Units.md)  | `0`         | The charge at the start of the simulation.                    |
-| `policy`           | [policy](#policies)       | required    | When the battery charges and discharges.                      |
+| `policy`           | [policy](#battery-policies) | required    | When the battery charges and discharges.                      |
 | `embodiedCarbon`   | number                    | `0`         | The carbon emitted to manufacture the battery, in kg CO2.     |
 | `expectedLifetime` | number                    | `0`         | The expected lifetime of the battery, in years.               |
 

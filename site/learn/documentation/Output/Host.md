@@ -10,7 +10,7 @@ description: The columns of host.parquet.
 | Column             | Type   | Unit     | Description                                                              |
 |--------------------|--------|----------|--------------------------------------------------------------------------|
 | `timestamp`        | int64  | ms       | The time of the sample.                                                  |
-| `host_id`          | int32  |          | The id of host. To get the name, see [meta/host.parquet](./Meta.md).                            |
+| `host_id`          | int32  |          | The id of the host. To get the name, see [meta/host.parquet](./Meta.md).                            |
 | `host_state`       | string |          | `UP`, `DOWN` or `ERROR`.                                                 |
 | `tasks_running`    | int32  | count    | The number of tasks running on the host.                                 |
 | `tasks_error`      | int32  | count    | The number of tasks on the host that failed.                             |

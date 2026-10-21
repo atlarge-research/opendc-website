@@ -1,92 +1,83 @@
-M3SA is setup using a json file. The Multi-Model is a top-layer applied on top of the
-simulator,
-capable to leverage into a singular tool the prediction of multiple models. The Meta-Model is a model generated from the
-Multi-Model, and predicts using the predictions of individual models.
+---
+description: M3SA, which combines the results of several OpenDC2 scenarios into a Multi-Model and a Meta-Model.
+---
 
-The Multi-Model's properties can be set using a JSON file. The JSON file must be linked to the scenario file and is
-required
-to follow the structure below.
+# M3SA
 
-## Schema
+M3SA (Multi-Meta-Model Simulation Analysis) analyses the results of an OpenDC2 experiment. It treats each scenario as
+a model, and plots one metric of all of them together: the Multi-Model. From the Multi-Model it can compute a
+Meta-Model, such as the mean of all models.
 
-The schema for the scenario file is provided in [schema](M3SASchema.md)
-In the following section, we describe the different components of the schema.
+## Running M3SA
 
-### General Structure
+The M3SA runner runs an experiment and then analyses its results with M3SA. Its main class is
+`opendc-experiments/opendc-experiments-m3sa/src/main/kotlin/org/opendc/experiments/m3sa/runner/M3SACli.kt` on the
+`OpenDC2-maintenance` branch.
 
-| Variable               | Type    | Required? | Default       | Possible Answers                                      | Description                                                                                                                                                                                    |
-|------------------------|---------|-----------|---------------|-------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| multimodel             | boolean | no        | true          | true, false                                           | Whether or not to build a Multi-Model. If set to false, a Meta-Model will not be computed either.                                                                                              |
-| metamodel              | boolean | no        | true          | true, false                                           | Whether to build a Meta-Model.                                                                                                                                                                 |
-| metric                 | string  | yes       | N/A           | N/A                                                   | What metric to be analyzed from the computed files.                                                                                                                                            |
-| current_unit           | string  | no        | ""            | any string (e.g., "CO2", "Wh")                        | The international system unit of the metric to be analyzed, without prefixes. e.g., "W" for Watt is ok, "kW" is not.                                                                           |
-| unit_scaling_magnitude | integer | no        | 10            | -9, -6, -3, 1, 3, 6, 9                                | The scaling factor to be applied to the metric (10^-9, 10^-6, 10^3, 10^3, 10^6, 10^9). For no scaling, input 1.                                                                                |            
-| window_size            | integer | no        | 1             | any positive, non-zero, integer                       | The size of the window, used for aggregating the chunks.                                                                                                                                       |
-| window_function        | string  | no        | "mean"        | "mean", "median"                                      | The function used by the window for aggregating the chunks (e.g., for "mean", the window will compute the mean of the samples).                                                                |
-| meta_function          | string  | no        | "mean"        | "mean", "median"                                      | The function used by the Meta-Model to be generated. For "mean", the Meta-Model takes the mean of the individual models, at the granularity established by the window-size.                    |
-| samples_per_minute     | double  | no        | N/A           | any positive, non-zero, double                        | The number of samples per minute, in the prediction data (simulator export rate). e.g., "0.2" means 1 sample every 5 minutes, "20" means a 20 samples per minute, or 1 sample every 3 seconds. |
-| seed                   | integer | no        | 0             | any integer >= 0                                      | The seed of the simulation. This must correspond to the seed from the output folder (from seed=x).                                                                                             |
-| plot_type              | string  | no        | "time_series" | "time_series", "cumulative", "cumulative_time_series" | The type of the plot, generated by the Multi-Model and Meta-Model.                                                                                                                             |
-| plot_title             | string  | no        | ""            | any string                                            | The title of the plot.                                                                                                                                                                         |
-| x_ticks_count          | integer | no        | None          | any integer, larger than 0                            | The number of ticks on x-axis.                                                                                                                                                                 |
-| y_ticks_count          | integer | no        | None          | any integer, larger than 0                            | The number of ticks on y-axis.                                                                                                                                                                 |
-| x_label                | string  | no        | "Time"        | any string                                            | The label for the x-axis of the plot.                                                                                                                                                          |
-| y_label                | string  | no        | "Metric Unit" | any string                                            | The label for the y-axis of the plot.                                                                                                                                                          |
-| y_min                  | double  | no        | None          | any positive, non-zero, double                        | The minimum value for the vertical axis of the plot.                                                                                                                                           |
-| y_max                  | double  | no        | None          | any positive, non-zero, double                        | The maximum value for the vertical axis of the plot.                                                                                                                                           |
-| x_min                  | double  | no        | None          | any positive, non-zero, double                        | The minimum value for the horizontal axis of the plot.                                                                                                                                         |
-| x_max                  | double  | no        | None          | any positive, non-zero, double                        | The maximum value for the horizontal axis of the plot.                                                                                                                                         |
+| Option                     | Default                                            | Description                                    |
+|----------------------------|----------------------------------------------------|------------------------------------------------|
+| `--experiment-path`        | `resources/experiment.json`                        | The [experiment](../Input/Experiment.md) file. |
+| `-m`, `--m3sa-setup-path`  | none                                               | The M3SA [setup file](#setup-file). Without it, M3SA is skipped. |
+| `-e`, `--m3sa-exec-path`   | `opendc-experiments/opendc-experiments-m3sa/src/main/python/` | The folder of the M3SA Python program. |
+| `-i`, `--iterations`       | `1`                                                | How often the experiment and analysis are run. |
 
-## Examples
+The runner analyses the results in `outputFolder/outputs/`, so set the `name` of the experiment to `outputs`.
 
-In the following section, we discuss several examples of M3SA setup files. Any setup file can be verified
-using the JSON schema defined in [schema](M3SASchema.md).
+M3SA can also be run on its own. The `m3sa` script in the Python folder sets up a Python environment and runs the
+analysis:
 
-### Simple
-
-The simplest M3SA setup that can be provided to OpenDC is shown below:
-
-```json
-{
-    "metric": "power_draw"
-}
+```bash
+m3sa setup.json output/outputs/raw-output -o output/outputs
 ```
 
-This configuration creates a Multi-Model and Meta-Model on the power_draw. All the other parameters are handled by the
-default values, towards reducing the complexity of the setup.
+The plot is written to `simulation-analysis/<metric>/` in the output folder, as a PDF. With a Meta-Model, its values are
+written to `raw-output/metamodel/seed=0/<metric>.parquet`.
 
-### Complex
+## Setup file
 
-A more complex M3SA setup, where the user has more control on teh generated output, is show below:
+| Field                    | Type             | Default         | Description                                                                                  |
+|--------------------------|------------------|-----------------|----------------------------------------------------------------------------------------------|
+| `metric`                 | string           | required        | The output column to analyse, such as `power_draw` or `carbon_emission`.                     |
+| `meta_function`          | string           | required        | How the Meta-Model combines the models: `mean` or `median`. Required, also without a Meta-Model. |
+| `multimodel`             | boolean          | `true`          | Build a Multi-Model.                                                                         |
+| `metamodel`              | boolean          | `false`         | Also compute a Meta-Model.                                                                   |
+| `window_size`            | integer          | `1`             | The number of samples that are combined into one value.                                      |
+| `window_function`        | string           | `mean`          | How the samples in a window are combined: `mean` or `median`.                                |
+| `seed`                   | integer          | `0`             | The run to analyse, from its `seed=` folder.                                                 |
+| `current_unit`           | string           | `""`            | The unit of the metric, without a prefix, such as `W`.                                       |
+| `unit_scaling_magnitude` | integer          | `1`             | The power of ten by which the values are scaled, such as `3` for a factor 1000.              |
+| `samples_per_minute`     | number           | `0`             | The export rate of the simulation. Not used at the moment.                                   |
+| `plot_type`              | string           | `time_series`   | `time_series`, `cumulative` or `cumulative_time_series`.                                     |
+| `plot_title`             | string           | `""`            | The title of the plot.                                                                       |
+| `x_label`, `y_label`     | string           | `""`            | The labels of the axes.                                                                      |
+| `x_min`, `x_max`         | number           | automatic       | The range of the x-axis. Both must be given.                                                 |
+| `y_min`, `y_max`         | number           | automatic       | The range of the y-axis. Both must be given.                                                 |
+| `x_ticks_count`, `y_ticks_count` | integer  | automatic       | The number of ticks on each axis.                                                            |
+| `figsize`                | list of numbers  | `[20, 10]`      | The width and height of the plot.                                                            |
+| `plot_colors`            | list of strings  | default colors  | The colors of the lines, such as `"#0277BB"`.                                                |
+| `figure_export_name`     | string           | generated       | The file name of the plot, without `.pdf`.                                                   |
+
+## Example
 
 ```json
 {
+    "metric": "power_draw",
     "multimodel": true,
-    "metamodel": false,
-    "metric": "carbon_emission",
+    "metamodel": true,
+    "meta_function": "mean",
     "window_size": 10,
-    "window_function": "median",
-    "metamodel_function": "mean",
-    "samples_per_minute": 0.2,
-    "unit_scaling_magnitude": 1000,
-    "current_unit": "gCO2",
-    "seed": 0,
-    "plot_type": "cumulative_time_series",
-    "plot_title": "Carbon Emission Prediction",
-    "x_label": "Time [days]",
-    "y_label": "Carbon Emission [gCO2/kWh]",
-    "x_min": 0,
-    "x_max": 200,
-    "y_min": 500,
-    "y_max": 1000,
-    "x_ticks_count": 3,
-    "y_ticks_count": 3
+    "window_function": "mean",
+    "current_unit": "W",
+    "unit_scaling_magnitude": 3,
+    "plot_type": "time_series",
+    "plot_title": "Power draw",
+    "x_label": "Time",
+    "y_label": "Power draw [kW]",
+    "y_min": 0,
+    "y_max": 33,
+    "figure_export_name": "power-draw"
 }
 ```
 
-This configuration creates a Multi-Model and a Meta-Model which predicts the carbon_emission. The window size is 10, and
-the aggregation function (for the window) is median. The Meta-Model function is mean. The data has been exported at a
-rate of 0.2 samples per minute (i.e., a sample every 5 minutes). The plot type is cummulative_time_series, which starts
-from a y-axis value of 500 and goes up to 1000. Therefore, the Multi-Model and the Meta-Model will show only
-the values greater than y_min (500) and smaller than y_max (1000). Also, the x-axis will start from 0 and go up to 200,
-with 3 ticks on the x-axis and 3 ticks on the y-axis.
+This plots the power draw of every scenario, averaged over windows of 10 samples, together with a Meta-Model that is
+the mean of all scenarios.
