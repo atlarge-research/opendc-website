@@ -66,6 +66,28 @@ const config = {
         ]
     ],
 
+    themes: [
+        [
+            // Local search: the index is built together with the site, so no external service is needed.
+            // Search only works in a production build (`npm run build && npm run serve`), not in `npm start`.
+            require.resolve("@easyops-cn/docusaurus-search-local"),
+            /** @type {import("@easyops-cn/docusaurus-search-local").PluginOptions} */
+            ({
+                hashed: true,
+                indexBlog: false,
+                docsRouteBasePath: ["learn", "community", "research"],
+                docsDir: ["learn", "community", "research"],
+                // The OpenDC2 docs get their own index: searching from an OpenDC2 page only finds OpenDC2 pages,
+                // and searching anywhere else does not find them.
+                searchContextByPaths: [{ label: "OpenDC2", path: "learn/opendc-2" }],
+                // The OpenDC2 pages are marked noindex to keep them out of search engines, but should still be
+                // searchable on the site itself.
+                forceIgnoreNoIndex: true,
+                highlightSearchTermsOnTargetPage: true
+            })
+        ]
+    ],
+
     themeConfig:
     /** @type {import("@docusaurus/preset-classic").ThemeConfig} */
         ({
