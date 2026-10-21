@@ -5,8 +5,8 @@ description: Failure models, which decide when hosts fail, for how long, and how
 
 # Failure model
 
-OpenDC can be used to simulation failures. Host failure is an important aspect of data center operations. A failure model decides when hosts fail, how long a failure lasts, and how many hosts it affects. At the moment, OpenDC only models start-stop failures. 
-When a host failes, all it tasks are interupted and the host can not be used until the failure ends. A task that has failed `maxNumFailures` times (see
+OpenDC can be used to simulate failures. Host failure is an important aspect of data center operations. A failure model decides when hosts fail, how long a failure lasts, and how many hosts it affects. At the moment, OpenDC only models start-stop failures. 
+When a host fails, all its tasks are interrupted and the host can not be used until the failure ends. A task that has failed `maxNumFailures` times (see
 [Experiment](./Experiment.md)) is terminated.
 
 There are four types of failure models selected by the `type` parameter:
@@ -89,3 +89,8 @@ The name combines a trace with a distribution:
 
 For example, `Lanl05Wbl` uses a Weibull distribution fitted to the LANL 2005 trace. Every prefab affects a uniformly
 random fraction of the hosts.
+
+The table below lists the parameters of each prefab. The availability intervals give the time between two failures,
+and the unavailability intervals the duration of a failure, both in hours.
+
+![The parameters of the prefab failure models](/img/failureModels.png)

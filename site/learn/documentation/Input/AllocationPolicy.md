@@ -29,7 +29,7 @@ A filter policy places each task in two steps:
     "filters": [
         { "type": "compute" },
         { "type": "vcpu", "allocationRatio": 1.0 },
-        { "type": "ram", "allocationRatio": 1.5 }
+        { "type": "ram" }
     ],
     "weighers": [
         { "type": "ram", "multiplier": 1.0 }
@@ -44,7 +44,7 @@ A filter policy places each task in two steps:
 | `compute`       |                                | are up.                                                                                                |
 | `vcpu`          | `allocationRatio` (default `1.0`) | have enough free CPU cores. An `allocationRatio` above 1 allows overcommitting cores.                |
 | `vcpuCapacity`  |                                | have cores at least as fast as the task needs.                                                         |
-| `ram`           |  | have enough free memory.                  |
+| `ram`           | `allocationRatio` (default `1.0`) | have enough free memory. **Do not change `allocationRatio`:** overcommitting memory is not supported yet. |
 | `vgpu`          | `allocationRatio` (default `1.0`) | have enough free GPU cores.                                                                          |
 | `instanceCount` | `limit`                        | run fewer than `limit` tasks.                                                                          |
 | `sameHost`      |                                | Currently has no effect.                                                                               |

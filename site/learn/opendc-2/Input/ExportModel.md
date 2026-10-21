@@ -1,50 +1,51 @@
-During simulation, OpenDC exports data to files (see [Output](../Output.md)).
-The user can define what and how data is exported using the `exportModels` parameter in the experiment file.
+---
+sidebar_position: 7
+description: Export models, which decide which results OpenDC2 writes, and how often.
+---
 
-## ExportModel
+# Export model
 
+An export model decides which [output files](../Output/Output.md) OpenDC writes, which columns they have, and how often
+a sample is taken.
 
+| Field                 | Type                                         | Default     | Description                                                                         |
+|-----------------------|----------------------------------------------|-------------|-------------------------------------------------------------------------------------|
+| `exportInterval`      | integer                                      | `300`       | The time between two samples, in seconds.                                           |
+| `printFrequency`      | integer or `null`                            | `24`        | Print a progress line every this many samples. `null` turns progress lines off.     |
+| `filesToExport`       | list of strings                              | all files   | The files to write. Choose from `host`, `task`, `powerSource`, `battery` and `service`. |
+| `computeExportConfig` | [compute export config](#columns)            | all columns | The columns to write in each file.                                                  |
 
-| Variable            | Type                                    | Required? | Default   | Description                                                                                                                                                   |
-|---------------------|-----------------------------------------|-----------|-----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| exportInterval      | Int64                                   | no        | 300       | The duration between two exports in seconds                                                                                                                   |
-| filesToExport       | Int64                                   | no        | 24        | How often OpenDC prints an update during simulation.                                                                                                          |  |
-| computeExportConfig | [ComputeExportConfig](#computeexportconfig) | no        | Default   | The features that should be exported during the simulation                                                                                                    |
-| filesToExport       | List[string]                            | no        | all files | List of the files that should be exported during simulation. The elements should be picked from the set ("host", "task", "powerSource", "battery", "service") |
+## Columns
 
+`computeExportConfig` has a list of column names per file. A file without a list gets all of its columns.
 
+| Field                      | Always written                                              |
+|----------------------------|-------------------------------------------------------------|
+| `hostExportColumns`        | `timestamp`, `timestamp_absolute`, `host_name`, `cluster_name` |
+| `taskExportColumns`        | `timestamp`, `timestamp_absolute`, `task_id`, `task_name`   |
+| `powerSourceExportColumns` | `timestamp`, `timestamp_absolute`, `source_name`, `cluster_name` |
+| `batteryExportColumns`     | `timestamp`, `timestamp_absolute`, `battery_name`, `cluster_name` |
+| `serviceExportColumns`     | `timestamp`, `timestamp_absolute`                           |
 
-### ComputeExportConfig
-The ComputeExportConfig defines which features should be exported during the simulation.
-Several features will always be exported, regardless of the configuration.
-When not provided, all features are exported.
+Column names are not case-sensitive. An unknown column name is ignored with an error message, and a list without any
+valid column name writes all columns.
 
-
-| Variable                 | Type         | Required? | Base                                                                   | Default      | Description                                                           |
-|--------------------------|--------------|-----------|------------------------------------------------------------------------|--------------|-----------------------------------------------------------------------|
-| hostExportColumns        | List[String] | no        | name <br/> cluster_name <br/> timestamp <br/> timestamp_absolute <br/> | All features | The features that should be exported to the host output file.         |
-| taskExportColumns        | List[String] | no        | task_id <br/> task_name <br/> timestamp <br/> timestamp_absolute <br/> | All features | The features that should be exported to the task output file.         |
-| powerSourceExportColumns | List[String] | no        | name <br/> cluster_name <br/> timestamp <br/> timestamp_absolute <br/> | All features | The features that should be exported to the power source output file. |
-| batteryExportColumns     | List[String] | no        | name <br/> cluster_name <br/> timestamp <br/> timestamp_absolute <br/> | All features | The features that should be exported to the battery output file.      |
-| serviceExportColumns     | List[String] | no        | timestamp <br/> timestamp_absolute <br/>                               | All features | The features that should be exported to the service output file.      |
-
-### Example
+## Example
 
 ```json
-{
-    "exportInterval": 3600,
-    "printFrequency": 168,
-    "filesToExport": ["host", "task", "service"],
-    "computeExportConfig": {
-        "hostExportColumns": ["power_draw", "energy_usage", "cpu_usage", "cpu_utilization"],
-        "taskExportColumns": ["submission_time", "schedule_time", "finish_time", "task_state"],
-        "serviceExportColumns": ["tasks_total", "tasks_pending", "tasks_active", "tasks_completed", "tasks_terminated", "hosts_up"]
+"exportModels": [
+    {
+        "exportInterval": 3600,
+        "printFrequency": 168,
+        "filesToExport": ["host", "task", "service"],
+        "computeExportConfig": {
+            "hostExportColumns": ["power_draw", "energy_usage", "cpu_usage", "cpu_utilization"],
+            "taskExportColumns": ["submission_time", "schedule_time", "finish_time", "task_state"],
+            "serviceExportColumns": ["tasks_total", "tasks_pending", "tasks_active", "tasks_completed", "tasks_terminated", "hosts_up"]
+        }
     }
-}
+]
 ```
-In this example: 
-- the simulation will export data every hour (3600 seconds).
-- The simulation will print an update every 168 seconds.
-- Only the host, task and service files will be exported.
-- Only a selection of features are exported for each file.
 
+This takes a sample every hour, prints progress every week of simulated time, and writes only the host, task and
+service files, each with a few columns.

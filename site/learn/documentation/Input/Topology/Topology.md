@@ -5,7 +5,7 @@ description: The topology, which defines the data centers, clusters and hosts th
 
 # Topology
 
-A topology defines the hardware that is simulated. A topololgy contains of one or more data centers. 
+A topology defines the hardware that is simulated. A topology consists of one or more data centers.
 Each data center contains a power source, an optional battery, and one or more clusters of hosts.
 
 ```

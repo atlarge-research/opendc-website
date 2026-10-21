@@ -7,14 +7,14 @@ description: Workloads, which define the tasks that are submitted to the data ce
 
 A workload defines the tasks that are submitted to the data center, when they are submitted, and how much CPU, GPU
 and memory they use over time. 
-Workloads can defined directly in the `experiment`, or be defined in a trace.  
+Workloads can be defined directly in the `experiment`, or in a trace.
 
 The `type` selects the kind of workload:
 
 | Type              | Description                                                                                      |
 |-------------------|--------------------------------------------------------------------------------------------------|
 | `trace`           | Reads the tasks from a [workload trace](#workload-traces).                                        |
-| `efficient-trace` | Like `trace`, but reads the trace in a single pass, which uses less memory for large traces and is faster. To be considered efficient, the trace must be ordered by submission_time and each task need to indicate its number of fragments using the `num_fragments` column. |
+| `efficient-trace` | Like `trace`, but reads the trace in a single pass, which uses less memory for large traces and is faster. To be considered efficient, the trace must be ordered by submission_time and each task needs to indicate its number of fragments using the `num_fragments` column. |
 | `inline`          | Lists the tasks in the experiment file.                                                           |
 
 ## Trace workloads

@@ -9,11 +9,11 @@ sidebar_label: Contributing
 First of all, thank you for wanting to contribute to OpenDC!
 You can contribute in various meaningful ways:
 
-* Report a bug through [GitHub issues](https://github.com/fabianishere/atlarge-research/issues).
+* Report a bug through [GitHub issues](https://github.com/atlarge-research/opendc/issues).
 * Propose new functionality for using this project.
 * Contribute improvements to the code and documentation.
 * Provide feedback about how we can improve the project.
-* Help answer questions on our [Discussions](https://github.com/atlarge-research/discussions) page.
+* Help answer questions on our [Discussions](https://github.com/atlarge-research/opendc/discussions) page.
 
 ## Want to report a bug or suggest a feature?
 
@@ -28,7 +28,7 @@ behavior, and be as detailed as you can. We'll get back to you asap!
 ## Want to contribute code?
 
 That's great! If you want to contribute to this
-repository, [fork it](https://github.com/atlarge-research/opendc/new/master) and submit a pull request here when you're
+repository, [fork it](https://github.com/atlarge-research/opendc/fork) and submit a pull request here when you're
 ready! Be sure to describe *what* you changed and *why* you changed it, to help us understand what your contribution is
 about.
 
