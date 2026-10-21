@@ -25,10 +25,10 @@ opendc run experiment.json -o output_folder
 |----------------------|-----------------------------------------------------------|----------------------------------------------|-----------------------------------------------------------------------------|
 | `name`               | string                                                    | `""`                                         | Name of the experiment. The results are written to `output/<name>/`.         |
 | `topologies`         | list of [Topology](./Topology/Topology.md)                | required                                     | Definition of the data centers to simulate.                                               |
-| `workloads`          | list of [Workload](./Workload.md)                         | required                                     | The workload that should be executed by on the data center.                                                           |
+| `workloads`          | list of [Workload](./Workload.md)                         | required                                     | The workload that should be executed on the data center.                                                           |
 | `allocationPolicies` | list of [Allocation policy](./AllocationPolicy.md)        | the `Mem` prefab                             | The policy deciding on which host a task should be run.                                              |
 | `failureModels`      | list of [Failure model](./FailureModel.md)                | `[{ "type": "none" }]`                       | A failure model decides when hosts fail and how.                                                            |
-| `maxNumFailures`     | list of integers                                          | `[10]`                                       | The number of times a host can fail before it is terminated.                    |
+| `maxNumFailures`     | list of integers                                          | `[10]`                                       | The number of times a task can fail before it is terminated.                    |
 | `checkpointModels`   | list of [Checkpoint model](./CheckpointModel.md) or `null` | `[null]`                                    | The model used by tasks to checkpoint their state. When not provided, checkpointing is not used.        |
 | `exportModels`       | list of [Export model](./ExportModel.md)                  | one export model with its defaults           | How results should be exported. This includes which files to export, which columns to export, and at which frequency.                                   |
 | `runs`               | integer                                                   | `1`                                          | How often each scenario is run, each time with a different seed.            |
@@ -47,7 +47,7 @@ Each scenario exports an `trackr.json` that defines the scenario that was run.
 
 ## Splitting an experiment over several files
 
-Not everthing has to be defined directly into the experiment file. 
+Not everything has to be defined directly into the experiment file. 
 Any object in the experiment, such as a topology, a cluster, a host or a workload, can take its fields from another
 file with `importFrom`. This lets experiments share topologies and workloads.
 A common use-case is to define the topology in a different file:

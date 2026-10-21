@@ -5,7 +5,7 @@ description: Distribution policies, which determine how a CPU or GPU is shared b
 
 # Distribution policy
 
-A distribution policy determines how the resources of a CPU or GPU is shared between the tasks on a host. OpenDC defines 5 distribution policies, with the defaul policy being `maxMinFairness`.
+A distribution policy determines how the resources of a CPU or GPU are shared between the tasks on a host. OpenDC defines 5 distribution policies, with the default policy being `maxMinFairness`.
 
 The `type` selects the policy:
 

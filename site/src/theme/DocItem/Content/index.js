@@ -5,8 +5,8 @@ import Head from '@docusaurus/Head'
 import Link from '@docusaurus/Link'
 import { useDoc } from '@docusaurus/plugin-content-docs/client'
 
-// Every doc in learn/opendc-2/ describes OpenDC 2, which is no longer developed. Those pages get a warning and are
-// kept out of search engines, so searches lead to the OpenDC 3 documentation. The migration guide is where the
+// Every doc in learn/opendc-2/ describes OpenDC2, which is no longer developed. Those pages get a warning and are
+// kept out of search engines, so searches lead to the OpenDC3 documentation. The migration guide is where the
 // warning points to, so it is left as a normal page.
 const OPENDC_2_PREFIX = 'opendc-2/'
 const MIGRATION_GUIDE_ID = 'opendc-2/migrating-to-opendc-3'
@@ -22,12 +22,12 @@ export default function ContentWrapper(props) {
             <Head>
                 <meta name="robots" content="noindex, nofollow" />
             </Head>
-            <Admonition type="warning" title="OpenDC 2 is no longer being developed">
+            <Admonition type="warning" title="OpenDC2 is no longer being developed">
                 <p>
-                    This page documents OpenDC 2. OpenDC 3 can still run OpenDC 2 experiment files with{' '}
-                    <code>opendc --legacy run</code>, but new features are only added to OpenDC 3. See the{' '}
-                    <Link to="/learn/category/documentation">OpenDC 3 documentation</Link>, or{' '}
-                    <Link to="/learn/opendc-2/migrating-to-opendc-3">Migrating to OpenDC 3</Link>.
+                    This page documents OpenDC2. OpenDC3 can still run OpenDC2 experiment files with{' '}
+                    <code>opendc --legacy run</code>, but new features are only added to OpenDC3. See the{' '}
+                    <Link to="/learn/category/documentation">OpenDC3 documentation</Link>, or{' '}
+                    <Link to="/learn/opendc-2/migrating-to-opendc-3">Migrating to OpenDC3</Link>.
                 </p>
             </Admonition>
             <Content {...props} />

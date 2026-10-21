@@ -1,36 +1,40 @@
-OpenDC uses power models to determine the power draw based on the utilization of a host. 
-All models in OpenDC are based on linear models interpolated between the idle and max power draw.
-OpenDC currently supports the following power models:
-1. **Constant**: The power draw is constant and does not depend on the utilization of the host.
-2. **Sqrt**: The power draw interpolates between idle and max using a square root function.
-3. **Linear**: The power draw interpolates between idle and max using a linear function.
-4. **Square**: The power draw interpolates between idle and max using a square function.
-5. **Cubic**The power draw interpolates between idle and max using a cubic function.
-6. **MSE**: The power draw interpolates between idle and max using a mean square error function.
-7. **Asymptotic**: The power draw interpolates between idle and max using an asymptotic function.
+---
+sidebar_position: 2
+description: Power models, which determine the power draw of a CPU or GPU from its utilization.
+---
 
-The power model is defined using the following parameters:
+# Power model
 
-| variable          | type    | Unit | required? | default | description                                                                |
-|-------------------|---------|------|-----------|---------|----------------------------------------------------------------------------|
-| modelType         | string  | N/A  | yes       | N/A     | The type of model used to determine power draw                             |
-| power             | double  | Mhz  | no        | 400     | The power draw of a host when using the constant power draw model.         |
-| idlePower         | double  | Mhz  | yes       | N/A     | The power draw of a host when idle in Watt.                                |
-| maxPower          | double  | Mhz  | yes       | N/A     | The power draw of a host when using max capacity in Watt.                  |
-| calibrationFactor | double  | Mhz  | no        | N/A     | The parameter set to minimize the mean squared error.                      |
-| asymUtil          | double  | Mhz  | no        | N/A     | A utilization level at which the host attains asymptotic.                  |
-| dvfs              | Boolean | N/A  | no        | N/A     | A flag indicates whether dynamic voltage and frequency scaling is enabled. |
+A power model determines the power draw of a CPU or GPU from its utilization. Every host has one for its CPU
+(`cpuPowerModel`) and one for its GPU (`gpuPowerModel`). When none is given, a linear model with an idle power of 200 W
+and a maximum power of 400 W is used.
 
+| Field               | Type                    | Default  | Description                                                                       |
+|---------------------|-------------------------|----------|-----------------------------------------------------------------------------------|
+| `modelType`         | string                  | required | The model, see the table below.                                                   |
+| `idlePower`         | [Power](../../Units.md) | required | The power draw at 0% utilization.                                                 |
+| `maxPower`          | [Power](../../Units.md) | required | The power draw at 100% utilization. It must be at least `idlePower`.              |
+| `power`             | [Power](../../Units.md) | `400 W`  | The power draw of the `constant` model.                                           |
+| `calibrationFactor` | number                  | `1.0`    | The calibration factor of the `mse` model.                                        |
+| `asymUtil`          | number                  | `0.0`    | The utilization above which the `asymptotic` model grows close to linearly.       |
+| `dvfs`              | boolean                 | `true`   | Whether the `asymptotic` model models dynamic voltage and frequency scaling.      |
+
+| Model type   | Power draw                                                                     |
+|--------------|--------------------------------------------------------------------------------|
+| `constant`   | Always `power`, independent of the utilization.                                |
+| `linear`     | Grows linearly from `idlePower` at 0% utilization to `maxPower` at 100%.       |
+| `square`     | Grows with the square of the utilization.                                      |
+| `cubic`      | Grows with the cube of the utilization.                                        |
+| `sqrt`       | Grows with the square root of the utilization.                                 |
+| `mse`        | Fitted to measurements, after Fan et al., ISCA 2007.                           |
+| `asymptotic` | Grows close to linearly above the utilization `asymUtil`, adapted from GreenCloud. |
 
 ## Example
 
 ```json
-{
+"cpuPowerModel": {
     "modelType": "sqrt",
-    "idlePower": 32.0,
-    "maxPower": 180.0
+    "idlePower": "32 W",
+    "maxPower": "180 W"
 }
 ```
-
-This creates a power model that uses a square root function to determine the power draw of a host.
-The model uses an idle and max power of 32 W and 180 W respectively.

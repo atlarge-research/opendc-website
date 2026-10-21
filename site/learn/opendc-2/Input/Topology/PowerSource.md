@@ -1,20 +1,32 @@
-Each cluster has a power source that provides power to the hosts in the cluster.
-A user can connect a power source to a carbon trace to determine the carbon emissions during a workload.
+---
+sidebar_position: 5
+description: The power source of a cluster, and the carbon trace used to compute carbon emissions.
+---
 
-The power source consist of the following components:
+# Power source
 
-| variable        | type         | Unit | required? | default        | description                                                                       |
-|-----------------|--------------|------|-----------|----------------|-----------------------------------------------------------------------------------|
-| name            | string       | N/A  | no        | PowerSource    | The name of the cluster. This is only important for debugging and post-processing |
-| maxPower        | integer      | Watt | no        | Long.Max_Value | The total power that the power source can provide in Watt.                        |
-| carbonTracePath | path/to/file | N/A  | no        | null           | A list of the hosts in a cluster.                                                 |
+Each [cluster](./Topology.md#cluster) has a power source that powers its hosts. A power source can be linked to a
+carbon trace, which OpenDC uses to compute the carbon emissions of the cluster.
+
+| Field             | Type    | Default         | Description                                                  |
+|-------------------|---------|-----------------|--------------------------------------------------------------|
+| `name`            | string  | `"PowerSource"` | Name of the power source.                                    |
+| `maxPower`        | integer | unlimited       | The maximum power the source can supply, in Watt.            |
+| `carbonTracePath` | string  | no carbon trace | The path to a carbon trace with the carbon intensity of the energy over time. |
+
+## Carbon traces
+
+A carbon trace is a Parquet file with the carbon intensity of the energy over time:
+
+| Column             | Type                     | Description                                       |
+|--------------------|--------------------------|---------------------------------------------------|
+| `timestamp`        | timestamp (milliseconds) | The time from which the carbon intensity applies. |
+| `carbon_intensity` | double                   | The carbon intensity, in gCO2/kWh.                |
 
 ## Example
 
 ```json
-{
-  "carbonTracePath": "carbon_traces/AT_2021-2024.parquet"
+"powerSource": {
+    "carbonTracePath": "carbon_traces/AT_2021-2024.parquet"
 }
 ```
-
-This example creates a power source with infinite power draw that uses the carbon trace from the file `carbon_traces/AT_2021-2024.parquet`.

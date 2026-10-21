@@ -5,8 +5,8 @@ description: Checkpoint models, which let tasks save their progress so that a fa
 
 # Checkpoint model
 
-Checkpointing is a techniques used to reduce the impact of failures. WHen using checkpointing, tasks take periodic snapshots. 
-At a failure, the task does not have to restart fully, but restarts at the lat snapshot. A checkpointing model defines, when a task should make a snapshot. Checkpointing is off by default.
+Checkpointing is a technique used to reduce the impact of failures. When using checkpointing, tasks take periodic snapshots.
+At a failure, the task does not have to restart fully, but restarts at the last snapshot. A checkpointing model defines when a task should make a snapshot. Checkpointing is off by default.
 
 | Field             | Type                     | Default     | Description                                                                          |
 |-------------------|--------------------------|-------------|--------------------------------------------------------------------------------------|

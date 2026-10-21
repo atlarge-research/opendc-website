@@ -1,107 +1,61 @@
-When using OpenDC, an experiment defines what should be run, and how. An experiment consists of one or more scenarios, 
-each defining a different simulation to run. Scenarios can differ in many things, such as the topology that is used, 
-the workload that is run, or the policies that are used to name a few. An experiment is defined using a JSON file. 
-In this page, we will discuss how to properly define experiments for OpenDC.
+---
+sidebar_position: 1
+description: The experiment file, which defines what OpenDC2 simulates.
+---
 
-:::info Code
-All code related to reading and processing Experiment files can be found [here](https://github.com/atlarge-research/opendc/tree/master/opendc-experiments/opendc-experiments-base/src/main/kotlin/org/opendc/experiments/base/experiment)
-The code used to run experiments can be found [here](https://github.com/atlarge-research/opendc/tree/master/opendc-experiments/opendc-experiments-base/src/main/kotlin/org/opendc/experiments/base/runner)
-:::
+# Experiment
 
-## Schema
+An experiment defines what OpenDC simulates. It is a JSON file that lists one or more topologies, workloads and
+policies. OpenDC runs a simulation, called a scenario, for every combination of them. See
+[Running OpenDC2](../Running.md) for how to run an experiment.
 
-In the following section, we describe the different components of an experiment. Following is a table with all experiment components:
+## Fields
 
-| Variable           | Type                                                                 | Required? | Default       | Description                                                                                           |
-|--------------------|----------------------------------------------------------------------|-----------|---------------|-------------------------------------------------------------------------------------------------------|
-| name               | string                                                               | no        | ""            | Name of the scenario, used for identification and referencing.                                        |
-| outputFolder       | string                                                               | no        | "output"      | Directory where the simulation outputs will be stored.                                                |
-| runs               | integer                                                              | no        | 1             | Number of times the same scenario should be run. Each scenario is run with a different seed.          |
-| initialSeed        | integer                                                              | no        | 0             | The seed used for random number generation during a scenario. Setting a seed ensures reproducability. |
-| topologies         | List[path/to/file]                                                   | yes       | N/A           | Paths to the JSON files defining the topologies.                                                      |
-| workloads          | List[[Workload](./Workload.md)]                 | yes       | N/A           | Paths to the files defining the workloads executed.                                                   |
-| allocationPolicies | List[[AllocationPolicy](./AllocationPolicy.md)] | yes       | N/A           | Allocation policies used for resource management in the scenario.                                     |
-| failureModels      | List[[FailureModel](./FailureModel.md)]         | no        | List[null]    | List of failure models to simulate various types of failures.                                         |
-| maxNumFailures     | List[integer]                                                        | no        | [10]          | The max number of times a task can fail before being terminated.                                      |
-| checkpointModels   | List[[CheckpointModel](./CheckpointModel.md)]   | no        | List[null]    | Paths to carbon footprint trace files.                                                                |
-| exportModels       | List[[ExportModel](./ExportModel.md)]           | no        | List[default] | Specifications for exporting data from the simulation.                                                |
+| Field                | Type                                                       | Default                    | Description                                                                         |
+|----------------------|------------------------------------------------------------|----------------------------|-------------------------------------------------------------------------------------|
+| `name`               | string                                                     | generated                  | Name of the experiment. When empty, a name such as `unnamed-simulation-1a2b` is generated. |
+| `outputFolder`       | string                                                     | `"output"`                 | The folder the results are written to, in `outputFolder/name/`.                    |
+| `topologies`         | list of topology files                                     | required                   | The [topologies](./Topology/Topology.md) to simulate, each as `{ "pathToFile": "topologies/topology.json" }`. |
+| `workloads`          | list of [Workload](./Workload.md)                          | required                   | The tasks to run.                                                                   |
+| `allocationPolicies` | list of [Allocation policy](./AllocationPolicy.md)         | the `Mem` prefab           | How tasks are placed on hosts.                                                      |
+| `failureModels`      | list of [Failure model](./FailureModel.md) or `null`       | `[null]`                   | When hosts fail. `null` means no failures.                                          |
+| `maxNumFailures`     | list of integers                                           | `[10]`                     | The number of failures after which a task is terminated.                            |
+| `checkpointModels`   | list of [Checkpoint model](./CheckpointModel.md) or `null` | `[null]`                   | How tasks checkpoint their progress. `null` turns checkpointing off.                |
+| `exportModels`       | list of [Export model](./ExportModel.md)                   | one export model with its defaults | Which results are written, and how often.                                   |
+| `runs`               | integer                                                    | `1`                        | How often each scenario is run, each time with a different seed.                    |
+| `initialSeed`        | integer                                                    | `0`                        | The seed of the first run. Run *i* uses seed `initialSeed + i`.                     |
 
-Most components of an experiment are not single values, but lists of values.
-This allows users to run multiple scenarios using a single experiment file.
-OpenDC will generate and execute all permutations of the different values.
+## Scenarios
 
-Some of the components in an experiment file are paths to files, or complicated objects. The format of these components 
-are defined in their respective pages.
+Each list in the experiment is one axis. OpenDC runs one scenario for every combination of the axes, and runs each
+scenario `runs` times. An experiment with 2 topologies, 1 workload and 3 allocation policies has 6 scenarios.
 
-## Examples
-In the following section, we discuss several examples of experiment files.
+Scenarios are numbered from 0. The numbering goes through the lists in order, with `topologies` changing slowest and
+`maxNumFailures` fastest. The number of a scenario is the name of its folder in the [output](../Output/Output.md), and
+`trackr.json` lists the settings of every scenario.
 
-### Simple
+## Example
 
-The simplest experiment that can be provided to OpenDC is shown below:
+This experiment runs three topologies, two workloads and two allocation policies, so it has 12 scenarios:
+
 ```json
 {
+    "name": "example",
     "topologies": [
-        {
-            "pathToFile": "topologies/topology1.json"
-        }
+        { "pathToFile": "topologies/topology1.json" },
+        { "pathToFile": "topologies/topology2.json" },
+        { "pathToFile": "topologies/topology3.json" }
     ],
     "workloads": [
-        {
-            "type": "ComputeWorkload",
-            "pathToFile": "traces/bitbrains-small"
-        }
+        { "pathToFile": "traces/bitbrains-small", "type": "ComputeWorkload" },
+        { "pathToFile": "traces/bitbrains-large", "type": "ComputeWorkload" }
     ],
     "allocationPolicies": [
-        {
-            "type": "prefab",
-            "policyName": "Mem"
-        }
+        { "type": "prefab", "policyName": "Mem" },
+        { "type": "prefab", "policyName": "MemInv" }
+    ],
+    "exportModels": [
+        { "exportInterval": 3600 }
     ]
 }
 ```
-
-This experiment creates a simulation from file topology1, located in the topologies folder, with a workload trace from the
-bitbrains-small file, and an allocation policy of type Mem. The simulation is run once (by default), and the default
-name is "".
-
-### Complex
-Following is an example of a more complex experiment:
-```json
-{
-    "topologies": [
-        {
-            "pathToFile": "topologies/topology1.json"
-        },
-        {
-            "pathToFile": "topologies/topology2.json"
-        },
-        {
-            "pathToFile": "topologies/topology3.json"
-        }
-    ],
-    "workloads": [
-        {
-            "pathToFile": "traces/bitbrains-small",
-            "type": "ComputeWorkload"
-        },
-        {
-            "pathToFile": "traces/bitbrains-large",
-            "type": "ComputeWorkload"
-        }
-    ],
-    "allocationPolicies": [
-        {
-            "type": "prefab",
-            "policyName": "Mem"
-        },
-        {
-            "type": "prefab",
-            "policyName": "Mem-Inv"
-        }
-    ]
-}
-```
-
-This scenario runs a total of 12 experiments. We have 3 topologies (3 datacenter configurations), each simulated with
-2 distinct workloads, each using a different allocation policy (either Mem or Mem-Inv).
